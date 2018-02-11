@@ -76,11 +76,11 @@ namespace dxvk {
       std::string inputPath = str::format(dumpPath, "/", m_name, ".spv");
       std::string outputPath = str::format(readPath, "/", m_name, ".spv");
 
-      if(access( outputPath.c_str(), F_OK ) == -1) {
+      //if(PathFileExists(outputPath.c_str())) { // it doesn't work on some wine builds
         if(!optymize_shader(sprivPath, inputPath, outputPath)) {
           Logger::err(str::format("Failed to optimize shader ", m_name));
         }
-      }
+      //}
 
       Logger::debug(str::format("Loading optimzied shader", m_name));
       std::ifstream readStream(outputPath, std::ios_base::binary);
