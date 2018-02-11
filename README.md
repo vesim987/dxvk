@@ -51,6 +51,7 @@ The behaviour of DXVK can be modified with environment variables.
 - `DXVK_DEBUG_LAYERS=1` Enables Vulkan debug layers. Highly recommended for troubleshooting and debugging purposes.
 - `DXVK_SHADER_DUMP_PATH=directory` Writes all DXBC and SPIR-V shaders to the given directory
 - `DXVK_SHADER_READ_PATH=directory` Reads SPIR-V shaders from the given directory rather than using the shader compiler.
+- `DXVK_SPIRV_OPT_PATH=spirv-opt.exe` Path to spirv-opt.exe binary, require `DXVK_SHADER_DUMP_PATH` and `DXVK_SHADER_READ_PATH` to work
 - `DXVK_LOG_LEVEL=error|warn|info|debug|trace` Controls message logging.
 - `DXVK_HUD=1` Enables the HUD
 
