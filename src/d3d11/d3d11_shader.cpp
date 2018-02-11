@@ -1,12 +1,24 @@
 #include "d3d11_device.h"
 #include "d3d11_shader.h"
-
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 namespace dxvk {
-  
+  bool optymize_shader(const std::string &sprivPath, const std::string &input_path, const std::string &output_path) {
+    std::string command = sprivPath;
+    //std::string command = "cmd /c start /unix /usr/bin/spirv-opt";
+    command += " --legalize-hlsl";
+    command += " \"" + input_path + "\"";
+    command += " -o \"" + output_path + "\"";
+    Logger::info(str::format("command ", command));
+
+    return system(command.c_str()) == 0;
+  }
+
   D3D11ShaderModule:: D3D11ShaderModule() { }
   D3D11ShaderModule::~D3D11ShaderModule() { }
-  
-  
+
+
   D3D11ShaderModule::D3D11ShaderModule(
     const DxbcOptions*  pDxbcOptions,
           D3D11Device*  pDevice,
@@ -15,35 +27,26 @@ namespace dxvk {
     DxbcReader reader(
       reinterpret_cast<const char*>(pShaderBytecode),
       BytecodeLength);
-    
+
     DxbcModule module(reader);
-    
+
     // Construct the shader name that we'll use for
     // debug messages and as the dump/read file name
     m_name = ConstructFileName(
       ComputeShaderHash(pShaderBytecode, BytecodeLength),
       module.version().type());
-    
+
     Logger::debug(str::format("Compiling shader ", m_name));
-    
+
     // If requested by the user, dump both the raw DXBC
     // shader and the compiled SPIR-V module to a file.
     const std::string dumpPath = env::getEnvVar(L"DXVK_SHADER_DUMP_PATH");
     const std::string readPath = env::getEnvVar(L"DXVK_SHADER_READ_PATH");
-    
-    if (dumpPath.size() != 0) {
-      reader.store(std::ofstream(str::format(dumpPath, "/", m_name, ".dxbc"),
-        std::ios_base::binary | std::ios_base::trunc));
-    }
-    
+    const std::string sprivPath = env::getEnvVar(L"DXVK_SPIRV_OPT_PATH");
+
     m_shader = module.compile(*pDxbcOptions);
     m_shader->setDebugName(m_name);
-    
-    if (dumpPath.size() != 0) {
-      m_shader->dump(std::ofstream(str::format(dumpPath, "/", m_name, ".spv"),
-        std::ios_base::binary | std::ios_base::trunc));
-    }
-    
+
     // If requested by the user, replace
     // the shader with another file.
     if (readPath.size() != 0) {
@@ -51,13 +54,45 @@ namespace dxvk {
       std::ifstream readStream(
         str::format(readPath, "/", m_name, ".spv"),
         std::ios_base::binary);
-      
-      if (readStream)
+
+      if (readStream) {
         m_shader->read(std::move(readStream));
+        Logger::info(str::format("Cached shader loaded: ", m_name));
+        return;
+      }
     }
+
+    if (dumpPath.size() != 0) {
+      reader.store(std::ofstream(str::format(dumpPath, "/", m_name, ".dxbc"),
+        std::ios_base::binary | std::ios_base::trunc));
+    }
+
+    if (dumpPath.size() != 0) {
+      m_shader->dump(std::ofstream(str::format(dumpPath, "/", m_name, ".spv"),
+        std::ios_base::binary | std::ios_base::trunc));
+    }
+
+    if(sprivPath.size() != 0) {
+      std::string inputPath = str::format(dumpPath, "/", m_name, ".spv");
+      std::string outputPath = str::format(readPath, "/", m_name, ".spv");
+
+      if(access( outputPath.c_str(), F_OK ) == -1) {
+        if(!optymize_shader(sprivPath, inputPath, outputPath)) {
+          Logger::err(str::format("Failed to optimize shader ", m_name));
+        }
+      }
+
+      Logger::debug(str::format("Loading optimzied shader", m_name));
+      std::ifstream readStream(outputPath, std::ios_base::binary);
+
+      if (readStream) {
+        m_shader->read(std::move(readStream));
+      }
+    }
+
   }
-  
-  
+
+
   Sha1Hash D3D11ShaderModule::ComputeShaderHash(
     const void*   pShaderBytecode,
           size_t  BytecodeLength) const {
@@ -65,13 +100,13 @@ namespace dxvk {
       reinterpret_cast<const uint8_t*>(pShaderBytecode),
       BytecodeLength);
   }
-  
-  
+
+
   std::string D3D11ShaderModule::ConstructFileName(
     const Sha1Hash&         hash,
     const DxbcProgramType&  type) const {
     std::string typeStr;
-    
+
     switch (type) {
       case DxbcProgramType::PixelShader:    typeStr = "PS_"; break;
       case DxbcProgramType::VertexShader:   typeStr = "VS_"; break;
@@ -80,8 +115,8 @@ namespace dxvk {
       case DxbcProgramType::DomainShader:   typeStr = "DS_"; break;
       case DxbcProgramType::ComputeShader:  typeStr = "CS_"; break;
     }
-    
+
     return str::format(typeStr, hash.toString());
   }
-  
+
 }
