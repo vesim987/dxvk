@@ -12,6 +12,8 @@ else
 endif
 
 lib_vulkan = dxvk_compiler.find_library('vulkan-1', dirs : dxvk_library_path)
+lib_spirv_tools = dxvk_compiler.find_library('libSPIRV-Tools', dirs : dxvk_library_path)
+lib_spirv_tools_opt = dxvk_compiler.find_library('libSPIRV-Tools-opt', dirs : dxvk_library_path)
 
 lib_d3d11          = dxvk_compiler.find_library('d3d11')
 lib_dxgi           = dxvk_compiler.find_library('dxgi')

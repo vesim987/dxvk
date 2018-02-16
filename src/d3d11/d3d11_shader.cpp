@@ -3,18 +3,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+
 namespace dxvk {
-  bool optymize_shader(const std::string &sprivPath, const std::string &input_path, const std::string &output_path) {
-    std::string command = sprivPath;
-    //std::string command = "cmd /c start /unix /usr/bin/spirv-opt";
-    command += " --legalize-hlsl";
-    command += " \"" + input_path + "\"";
-    command += " -o \"" + output_path + "\"";
-    Logger::info(str::format("command ", command));
-
-    return system(command.c_str()) == 0;
-  }
-
   D3D11ShaderModule:: D3D11ShaderModule() { }
   D3D11ShaderModule::~D3D11ShaderModule() { }
 
@@ -42,7 +32,9 @@ namespace dxvk {
     // shader and the compiled SPIR-V module to a file.
     const std::string dumpPath = env::getEnvVar(L"DXVK_SHADER_DUMP_PATH");
     const std::string readPath = env::getEnvVar(L"DXVK_SHADER_READ_PATH");
-    const std::string sprivPath = env::getEnvVar(L"DXVK_SPIRV_OPT_PATH");
+    const std::string sprivOpt = env::getEnvVar(L"DXVK_SPIRV_OPT");
+    const std::string dumpOptPath = env::getEnvVar(L"DXVK_SHADER_DUMP_OPTIMIZED_PATH");
+
 
     m_shader = module.compile(*pDxbcOptions);
     m_shader->setDebugName(m_name);
@@ -72,24 +64,14 @@ namespace dxvk {
         std::ios_base::binary | std::ios_base::trunc));
     }
 
-    if(sprivPath.size() != 0) {
-      std::string inputPath = str::format(dumpPath, "/", m_name, ".spv");
-      std::string outputPath = str::format(readPath, "/", m_name, ".spv");
-
-      //if(PathFileExists(outputPath.c_str())) { // it doesn't work on some wine builds
-        if(!optymize_shader(sprivPath, inputPath, outputPath)) {
-          Logger::err(str::format("Failed to optimize shader ", m_name));
-        }
-      //}
-
-      Logger::debug(str::format("Loading optimzied shader", m_name));
-      std::ifstream readStream(outputPath, std::ios_base::binary);
-
-      if (readStream) {
-        m_shader->read(std::move(readStream));
-      }
+    if(sprivOpt.size() != 0) {
+        m_shader->optimize();
     }
 
+    if (dumpOptPath.size() != 0 && sprivOpt.size() != 0) {
+      m_shader->dump(std::ofstream(str::format(dumpOptPath, "/", m_name, ".spv"),
+        std::ios_base::binary | std::ios_base::trunc));
+    }
   }
 
 
