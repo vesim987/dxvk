@@ -167,7 +167,7 @@ namespace dxvk {
       return DxvkMemory(nullptr, this, memory,
         0, size, this->mapDeviceMemory(memory));
     } else {
-      std::lock_guard<std::mutex> lock(m_mutex);
+      std::lock_guard<util::CriticalMutex> lock(m_mutex);
       
       // Probe chunks in a first-fit manner
       for (const auto& chunk : m_chunks) {
@@ -236,7 +236,7 @@ namespace dxvk {
           DxvkMemoryChunk*  chunk,
           VkDeviceSize      offset,
           VkDeviceSize      length) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<util::CriticalMutex> lock(m_mutex);
     chunk->free(offset, length);
   }
   

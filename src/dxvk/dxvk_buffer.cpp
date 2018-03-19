@@ -31,11 +31,11 @@ namespace dxvk {
   
   
   DxvkPhysicalBufferSlice DxvkBuffer::allocPhysicalSlice() {
-    std::unique_lock<std::mutex> freeLock(m_freeMutex);
+    std::unique_lock<util::CriticalMutex> freeLock(m_freeMutex);
     
     // If no slices are available, swap the two free lists.
     if (m_freeSlices.size() == 0) {
-      std::unique_lock<std::mutex> swapLock(m_swapMutex);
+      std::unique_lock<util::CriticalMutex> swapLock(m_swapMutex);
       std::swap(m_freeSlices, m_nextSlices);
     }
       
@@ -63,7 +63,7 @@ namespace dxvk {
   
   void DxvkBuffer::freePhysicalSlice(const DxvkPhysicalBufferSlice& slice) {
     // Add slice to a separate free list to reduce lock contention.
-    std::unique_lock<std::mutex> swapLock(m_swapMutex);
+    std::unique_lock<util::CriticalMutex> swapLock(m_swapMutex);
     m_nextSlices.push_back(slice);
   }
   

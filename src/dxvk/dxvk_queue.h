@@ -1,9 +1,11 @@
 #pragma once
 
 #include <condition_variable>
-#include <mutex>
 #include <queue>
 #include <thread>
+
+#include "../util/util_mutex.h"
+#include "../util/util_condition_variable.h"
 
 #include "dxvk_cmdlist.h"
 #include "dxvk_sync.h"
@@ -32,9 +34,9 @@ namespace dxvk {
     
     std::atomic<bool>       m_stopped = { false };
     
-    std::mutex              m_mutex;
-    std::condition_variable m_condOnAdd;
-    std::condition_variable m_condOnTake;
+    util::CriticalMutex              m_mutex;
+    util::ConditionVariable m_condOnAdd;
+    util::ConditionVariable m_condOnTake;
     std::queue<Rc<DxvkCommandList>> m_entries;
     std::thread             m_thread;
     

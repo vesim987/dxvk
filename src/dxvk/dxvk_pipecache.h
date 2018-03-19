@@ -2,11 +2,13 @@
 
 #include <atomic>
 #include <chrono>
-#include <condition_variable>
 #include <fstream>
 #include <thread>
 
 #include "dxvk_include.h"
+
+#include "../util/util_mutex.h"
+#include "../util/util_condition_variable.h"
 
 #include "../util/sha1/sha1_util.h"
 #include "../util/util_env.h"
@@ -52,8 +54,8 @@ namespace dxvk {
     std::atomic<uint32_t>   m_updateStop;
     std::atomic<uint32_t>   m_updateCounter;
     
-    std::mutex              m_updateMutex;
-    std::condition_variable m_updateCond;
+    util::CriticalMutex     m_updateMutex;
+    util::ConditionVariable m_updateCond;
     std::thread             m_updateThread;
     
     void runThread();

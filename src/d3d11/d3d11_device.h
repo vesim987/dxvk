@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mutex>
+#include "../util/util_mutex.h"
 #include <vector>
 
 #include "../dxbc/dxbc_options.h"
@@ -351,11 +351,11 @@ namespace dxvk {
     
     D3D11ImmediateContext*          m_context = nullptr;
     
-    std::mutex                      m_counterMutex;
+    util::CriticalMutex             m_counterMutex;
     std::vector<uint32_t>           m_counterSlices;
     Rc<DxvkBuffer>                  m_counterBuffer;
     
-    std::mutex                      m_resourceInitMutex;
+    util::CriticalMutex             m_resourceInitMutex;
     Rc<DxvkContext>                 m_resourceInitContext;
     uint64_t                        m_resourceInitCommands = 0;
     

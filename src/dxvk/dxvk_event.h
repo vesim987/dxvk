@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mutex>
+#include "../util/util_mutex.h"
 
 #include "dxvk_include.h"
 
@@ -48,7 +48,7 @@ namespace dxvk {
     
   private:
     
-    std::mutex m_mutex;
+    util::CriticalMutex m_mutex;
     
     DxvkEventStatus         m_status   = DxvkEventStatus::Signaled;
     uint32_t                m_revision = 0;

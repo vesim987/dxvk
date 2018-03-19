@@ -315,7 +315,7 @@ namespace dxvk {
     DxvkUnboundResources      m_unboundResources;
     DxvkOptions               m_options;
     
-    std::mutex m_submissionLock;
+    util::CriticalMutex m_submissionLock;
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
     VkQueue m_presentQueue  = VK_NULL_HANDLE;
     

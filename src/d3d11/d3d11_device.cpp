@@ -1627,7 +1627,7 @@ namespace dxvk {
   
   
   DxvkBufferSlice D3D11Device::AllocateCounterSlice() {
-    std::lock_guard<std::mutex> lock(m_counterMutex);
+    std::lock_guard<util::CriticalMutex> lock(m_counterMutex);
     
     if (m_counterSlices.size() == 0)
       throw DxvkError("D3D11Device: Failed to allocate counter slice");
@@ -1642,7 +1642,7 @@ namespace dxvk {
   
   
   void D3D11Device::FreeCounterSlice(const DxvkBufferSlice& Slice) {
-    std::lock_guard<std::mutex> lock(m_counterMutex);
+    std::lock_guard<util::CriticalMutex> lock(m_counterMutex);
     m_counterSlices.push_back(Slice.offset() / sizeof(D3D11UavCounter));
   }
   

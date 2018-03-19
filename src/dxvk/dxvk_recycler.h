@@ -1,7 +1,8 @@
 #pragma once
 
-#include <mutex>
 #include <vector>
+
+#include "../util/util_mutex.h"
 
 namespace dxvk {
   
@@ -29,7 +30,7 @@ namespace dxvk {
      * \return An object, or \c nullptr
      */
     Rc<T> retrieveObject() {
-      std::lock_guard<std::mutex> lock(m_mutex);
+      std::lock_guard<util::CriticalMutex> lock(m_mutex);
       
       if (m_objectId == 0)
         return nullptr;
@@ -46,7 +47,7 @@ namespace dxvk {
      * \param [in] object The object to return
      */
     void returnObject(const Rc<T>& object) {
-      std::lock_guard<std::mutex> lock(m_mutex);
+      std::lock_guard<util::CriticalMutex> lock(m_mutex);
       
       if (m_objectId < N)
         m_objects.at(m_objectId++) = object;
@@ -54,7 +55,7 @@ namespace dxvk {
     
   private:
     
-    std::mutex           m_mutex;
+    util::CriticalMutex           m_mutex;
     std::array<Rc<T>, N> m_objects;
     size_t               m_objectId = 0;
     

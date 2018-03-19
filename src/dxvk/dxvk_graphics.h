@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "../util/util_mutex.h"
+
 #include "dxvk_binding.h"
 #include "dxvk_constant_state.h"
 #include "dxvk_pipecache.h"

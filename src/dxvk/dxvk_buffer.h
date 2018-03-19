@@ -1,7 +1,8 @@
 #pragma once
 
-#include <mutex>
 #include <vector>
+
+#include "../util/util_mutex.h"
 
 #include "dxvk_buffer_res.h"
 
@@ -140,8 +141,8 @@ namespace dxvk {
     DxvkPhysicalBufferSlice m_physSlice;
     uint32_t                m_revision = 0;
     
-    std::mutex m_freeMutex;
-    std::mutex m_swapMutex;
+    util::CriticalMutex m_freeMutex;
+    util::CriticalMutex m_swapMutex;
     
     std::vector<DxvkPhysicalBufferSlice> m_freeSlices;
     std::vector<DxvkPhysicalBufferSlice> m_nextSlices;

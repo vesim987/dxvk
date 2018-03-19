@@ -11,7 +11,7 @@ namespace dxvk {
   
   
   DxvkSubmissionQueue::~DxvkSubmissionQueue() {
-    { std::unique_lock<std::mutex> lock(m_mutex);
+    { std::unique_lock<util::CriticalMutex> lock(m_mutex);
       m_stopped.store(true);
     }
     
@@ -21,7 +21,7 @@ namespace dxvk {
   
   
   void DxvkSubmissionQueue::submit(const Rc<DxvkCommandList>& cmdList) {
-    { std::unique_lock<std::mutex> lock(m_mutex);
+    { std::unique_lock<util::CriticalMutex> lock(m_mutex);
       
       m_condOnTake.wait(lock, [this] {
         return m_entries.size() < MaxNumQueuedCommandBuffers;
@@ -37,7 +37,7 @@ namespace dxvk {
     while (!m_stopped.load()) {
       Rc<DxvkCommandList> cmdList;
       
-      { std::unique_lock<std::mutex> lock(m_mutex);
+      { std::unique_lock<util::CriticalMutex> lock(m_mutex);
         
         m_condOnAdd.wait(lock, [this] {
           return m_stopped.load() || (m_entries.size() != 0);

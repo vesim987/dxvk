@@ -163,7 +163,7 @@ namespace dxvk {
   
   Rc<DxvkRenderPass> DxvkRenderPassPool::getRenderPass(
     const DxvkRenderPassFormat& fmt) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<util::CriticalMutex> lock(m_mutex);
     
     Rc<DxvkRenderPass> renderPass = nullptr;
     

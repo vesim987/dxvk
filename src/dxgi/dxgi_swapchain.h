@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 
 #include <dxvk_surface.h>
 #include <dxvk_swapchain.h>
@@ -9,6 +8,8 @@
 #include "dxgi_interfaces.h"
 #include "dxgi_object.h"
 #include "dxgi_presenter.h"
+
+#include "../util/util_mutex.h"
 
 #include "../d3d11/d3d11_interfaces.h"
 
@@ -88,7 +89,7 @@ namespace dxvk {
       RECT     rect    = { 0, 0, 0, 0 };
     };
     
-    std::recursive_mutex m_mutex;
+    util::RecursiveCriticalMutex m_mutex;
     
     Com<DxgiFactory>                m_factory;
     Com<DxgiAdapter>                m_adapter;

@@ -26,7 +26,7 @@ namespace dxvk {
   
   DxvkPipelineCache::~DxvkPipelineCache() {
     // Stop the shader cache update thread
-    { std::unique_lock<std::mutex> lock(m_updateMutex);
+    { std::unique_lock<util::CriticalMutex> lock(m_updateMutex);
       m_updateStop = -1;
       m_updateCond.notify_one();
     }
@@ -55,7 +55,7 @@ namespace dxvk {
       // Periodically check whether we need to update once a minute.
       // We don't want to write the full pipeline cache with every
       // single update because that would cause unnecessary load.
-      { std::unique_lock<std::mutex> lock(m_updateMutex);
+      { std::unique_lock<util::CriticalMutex> lock(m_updateMutex);
         
         bool exit = m_updateCond.wait_for(lock,
           std::chrono::seconds(60),

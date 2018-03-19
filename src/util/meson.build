@@ -1,6 +1,8 @@
 util_src = files([
   'util_env.cpp',
-  
+  'util_mutex.cpp',
+  'util_condition_variable.cpp',
+
   'com/com_guid.cpp',
   'com/com_private_data.cpp',
   

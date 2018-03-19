@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mutex>
+#include "../util/util_mutex.h"
 
 #include "dxvk_limits.h"
 
@@ -188,7 +188,7 @@ namespace dxvk {
     const VkQueryType         m_type;
     const VkQueryControlFlags m_flags;
     
-    std::mutex m_mutex;
+    util::CriticalMutex m_mutex;
     
     DxvkQueryStatus m_status   = DxvkQueryStatus::Available;
     DxvkQueryData   m_data     = {};

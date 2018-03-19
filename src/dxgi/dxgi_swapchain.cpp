@@ -89,7 +89,7 @@ namespace dxvk {
   HRESULT STDMETHODCALLTYPE DxgiSwapChain::GetBuffer(UINT Buffer, REFIID riid, void** ppSurface) {
     InitReturnPtr(ppSurface);
     
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     
     if (Buffer > 0) {
       Logger::err("DxgiSwapChain::GetBuffer: Buffer > 0 not supported");
@@ -119,7 +119,7 @@ namespace dxvk {
     if (pDesc == nullptr)
       return DXGI_ERROR_INVALID_CALL;
     
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     *pDesc = m_desc;
     return S_OK;
   }
@@ -129,7 +129,7 @@ namespace dxvk {
     if (pStats == nullptr)
       return DXGI_ERROR_INVALID_CALL;
     
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     *pStats = m_stats;
     return S_OK;
   }
@@ -138,7 +138,7 @@ namespace dxvk {
   HRESULT STDMETHODCALLTYPE DxgiSwapChain::GetFullscreenState(
           BOOL*         pFullscreen,
           IDXGIOutput** ppTarget) {
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     
     HRESULT hr = S_OK;
     
@@ -160,14 +160,14 @@ namespace dxvk {
     if (pLastPresentCount == nullptr)
       return DXGI_ERROR_INVALID_CALL;
     
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     *pLastPresentCount = m_stats.PresentCount;
     return S_OK;
   }
   
   
   HRESULT STDMETHODCALLTYPE DxgiSwapChain::Present(UINT SyncInterval, UINT Flags) {
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     
     if (Flags & DXGI_PRESENT_TEST)
       return S_OK;
@@ -205,7 +205,7 @@ namespace dxvk {
           UINT        Height,
           DXGI_FORMAT NewFormat,
           UINT        SwapChainFlags) {
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     
     const VkExtent2D windowSize = GetWindowSize();
     
@@ -228,7 +228,7 @@ namespace dxvk {
     if (pNewTargetParameters == nullptr)
       return DXGI_ERROR_INVALID_CALL;
     
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     
     // TODO support fullscreen mode
     RECT newRect = { 0, 0, 0, 0 };
@@ -251,7 +251,7 @@ namespace dxvk {
   HRESULT STDMETHODCALLTYPE DxgiSwapChain::SetFullscreenState(
           BOOL          Fullscreen,
           IDXGIOutput*  pTarget) {
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::lock_guard<util::RecursiveCriticalMutex> lock(m_mutex);
     
     if (Fullscreen)
       Logger::warn("DxgiSwapChain: Display mode changes not implemented");

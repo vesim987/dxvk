@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../util/util_mutex.h"
+
 #include "dxvk_adapter.h"
 
 namespace dxvk {
@@ -179,7 +181,7 @@ namespace dxvk {
     const VkMemoryType               m_memType;
     const VkDeviceSize               m_chunkSize = 16 * 1024 * 1024;
     
-    std::mutex                       m_mutex;
+    util::CriticalMutex                       m_mutex;
     std::vector<Rc<DxvkMemoryChunk>> m_chunks;
     
     VkDeviceMemory allocDeviceMemory(

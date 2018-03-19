@@ -1,7 +1,8 @@
 #pragma once
 
-#include <mutex>
 #include <unordered_map>
+
+#include "../util/util_mutex.h"
 
 #include "dxvk_hash.h"
 #include "dxvk_include.h"
@@ -190,7 +191,7 @@ namespace dxvk {
     
     Rc<vk::DeviceFn> m_vkd;
     
-    std::mutex                      m_mutex;
+    util::CriticalMutex                      m_mutex;
     std::vector<Rc<DxvkRenderPass>> m_renderPasses;
     
     Rc<DxvkRenderPass> createRenderPass(

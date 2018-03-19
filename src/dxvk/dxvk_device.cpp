@@ -185,7 +185,7 @@ namespace dxvk {
   
   VkResult DxvkDevice::presentSwapImage(
     const VkPresentInfoKHR&         presentInfo) {
-    std::lock_guard<std::mutex> lock(m_submissionLock);
+    std::lock_guard<util::CriticalMutex> lock(m_submissionLock);
     return m_vkd->vkQueuePresentKHR(m_presentQueue, &presentInfo);
   }
   
@@ -210,7 +210,7 @@ namespace dxvk {
     VkResult status;
     
     { // Queue submissions are not thread safe
-      std::lock_guard<std::mutex> lock(m_submissionLock);
+      std::lock_guard<util::CriticalMutex> lock(m_submissionLock);
       
       status = commandList->submit(
         m_graphicsQueue, waitSemaphore, wakeSemaphore);

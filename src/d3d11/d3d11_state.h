@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include "../util/util_mutex.h"
+
 #include "d3d11_blend.h"
 #include "d3d11_depth_stencil.h"
 #include "d3d11_rasterizer.h"
@@ -54,7 +56,7 @@ namespace dxvk {
      * \returns Pointer to the state object
      */
     T* Create(D3D11Device* device, const DescType& desc) {
-      std::lock_guard<std::mutex> lock(m_mutex);
+      std::lock_guard<util::CriticalMutex> lock(m_mutex);
       
       auto pair = m_objects.find(desc);
       
@@ -68,7 +70,7 @@ namespace dxvk {
     
   private:
     
-    std::mutex                                 m_mutex;
+    util::CriticalMutex                        m_mutex;
     std::unordered_map<DescType, Com<T>,
       D3D11StateDescHash, D3D11StateDescEqual> m_objects;
     

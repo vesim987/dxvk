@@ -7,6 +7,7 @@ if dxvk_compiler.get_id() == 'msvc'
   add_global_arguments('-DNOMINMAX', language : 'cpp')
   dxvk_cpp_std='c++latest'
 else
+  add_global_arguments('-D_WIN32_WINNT=0x0601', language : 'cpp')
   dxvk_cpp_std='c++1z'
 endif
 

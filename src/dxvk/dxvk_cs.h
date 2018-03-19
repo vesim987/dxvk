@@ -1,10 +1,12 @@
 #pragma once
 
 #include <atomic>
-#include <condition_variable>
-#include <mutex>
+//#include <condition_variable>
 #include <queue>
 #include <thread>
+
+#include "../util/util_mutex.h"
+#include "../util/util_condition_variable.h"
 
 #include "dxvk_context.h"
 
@@ -198,9 +200,9 @@ namespace dxvk {
     const Rc<DxvkContext>       m_context;
     
     std::atomic<bool>           m_stopped = { false };
-    std::mutex                  m_mutex;
-    std::condition_variable     m_condOnAdd;
-    std::condition_variable     m_condOnSync;
+    util::CriticalMutex         m_mutex;
+    util::ConditionVariable     m_condOnAdd;
+    util::ConditionVariable     m_condOnSync;
     std::queue<Rc<DxvkCsChunk>> m_chunksQueued;
     std::thread                 m_thread;
     

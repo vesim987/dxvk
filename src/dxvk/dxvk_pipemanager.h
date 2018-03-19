@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include "../util/util_mutex.h"
+
 #include "dxvk_compute.h"
 #include "dxvk_graphics.h"
 

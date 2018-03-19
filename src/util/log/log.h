@@ -1,10 +1,12 @@
 #pragma once
 
+#include <mutex>
 #include <array>
 #include <fstream>
 #include <iostream>
-#include <mutex>
 #include <string>
+
+#include "../util_mutex.h"
 
 namespace dxvk {
   
@@ -47,7 +49,7 @@ namespace dxvk {
     
     const LogLevel m_minLevel;
     
-    std::mutex    m_mutex;
+    util::CriticalMutex    m_mutex;
     std::ofstream m_fileStream;
     
     void emitMsg(LogLevel level, const std::string& message);
